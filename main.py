@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 ## Global data that we might need later. Will change this whole thing into a class later, this is to receive the results quickly at first
 YEARS = []
 VALUES = []
+YEARS_MONTH = []
 
 ## This function basically makes the api call, gets the data in JSON format, parses it to csv and stores it in a csv file. There is a loop that you can see which calls the api multiple times with different years
 def getData():
@@ -30,16 +31,30 @@ def getData():
 def readCSVandPlotLineGraph():
 	df = pandas.read_csv('data.csv')
 	for year in df['year']:
-		YEARS.append(str(year))
+		YEARS.append(year)
+		YEARS_MONTH.append(year)
 	i = 0
 	for month in  df['reference_period_desc']:
-		YEARS[i] = str(YEARS[i]) + month
+		YEARS_MONTH[i] = str(YEARS_MONTH[i]) + month
 		i += 1
 	for value in df['Value']:
-		VALUES.append( int(value.replace(',',''))/1000 ) #this will give value in thousands, we can just put that as a label
-	print(len(YEARS), len(VALUES))
+		VALUES.append(int(value.replace(',',''))) #this will give value in thousands, we can just put that as a label
 	plt.plot(YEARS, VALUES)
-	plt.show()
+	plt.savefig('plot.png')
+
+def mean():
+	meanDict = {}
+	for i in range(len(VALUES)):
+		if YEARS[i] in meanDict:
+			meanDict[YEARS[i]].append(VALUES[i])
+		else:
+			meanDict[YEARS[i]] = [VALUES[i]]
+	
+	for item in meanDict:
+		print(item, sum(meanDict[item]) / len(meanDict[item]))
+
+
 
 # getData()
 readCSVandPlotLineGraph()
+mean()
