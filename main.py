@@ -42,7 +42,7 @@ def readCSVandStore():
 		YEARS_MONTH[i] = str(YEARS_MONTH[i]) + month
 		i += 1
 	for value in df['Value']:
-		VALUES.append(int(value.replace(',',''))) #this will give value in thousands, we can just put that as a label
+		VALUES.append(int(value.replace(',','')))
 
 	for i in range(len(VALUES)):
 		if YEARS[i] in meanDict:
@@ -72,7 +72,7 @@ def mean():
 		print str(item) + "\t | \t" + str(sum(meanDict[item]) / len(meanDict[item]))
 
 def median():
-	print "\n*************************"
+	print "\n\n*************************"
 	print "\tMedian\n*************************"
 	print "Year\t |\tMedian Value"
 	print "--------------------------"
@@ -107,24 +107,27 @@ def linear_reg():
 		string_predictions.append(float(curr_prediction))
 		count += 1
 
-	print('Prediction for the month of November:', string_predictions[10])
+	print('\n\n')
+	print 'Prediction for the month of November:', string_predictions[10]
 	absolute_error = abs(string_predictions[10] - SELECTED_DATA[10])  # gets the data for the month of Nov from both arrays
-	print('Absolute Error:', absolute_error)
+	print 'Absolute Error:', absolute_error
 	r_squared = r2_score(SELECTED_DATA, string_predictions)
-	print('R Squared value:', r_squared)
+	print 'R Squared value:', r_squared
 
 	STRING_MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
 	plt.plot(STRING_MONTHS, SELECTED_DATA)
-	plt.show()
+	plt.savefig("Prediction1.png")
+	plt.close()
 
 	linear_fit = np.polyfit(NUM_MONTHS, SELECTED_DATA, 1)
 	fit_function = np.poly1d(linear_fit)
 	plt.plot(STRING_MONTHS, SELECTED_DATA, 'yo', STRING_MONTHS, fit_function(NUM_MONTHS), '--k')
-	plt.show()
+	plt.savefig("Prediction2.png")
+	plt.close()
 
-# getData()
+getData()
 readCSVandStore()
 plotChart()
 mean()
 median()
-# linear_reg()
+linear_reg()
