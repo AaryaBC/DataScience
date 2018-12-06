@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 YEARS = []
 VALUES = []
 
+
+## This function basically makes the api call, gets the data in JSON format, parses it to csv and stores it in a csv file. There is a loop that you can see which calls the api multiple times with different years
 def getData():
 	with requests.Session() as s:
 		year = 1989
@@ -28,15 +30,17 @@ def getData():
 					count += 1
 				writer.writerow(vals.values())
 			year += 1
+		dataFile.close()
 
 def readCSV():
 	df = pandas.read_csv('data.csv')
 	for year in df['year']:
 		YEARS.append(year)
 	for value in df['Value']:
-		VALUES.append( int(value.replace(',',''))/1000 )
+		VALUES.append( int(value.replace(',',''))/1000 ) #this will give value in thousands, we can just put that as a label
 
 	plt.plot(YEARS, VALUES)
 	plt.show()
 
+getData()
 readCSV()
