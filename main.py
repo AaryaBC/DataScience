@@ -7,12 +7,12 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
 
-## Global data that we might need later. Will change this whole thing into a class later, this is to receive the results quickly at first
 YEARS = []
 VALUES = []
 YEARS_MONTH = []
+meanDict = {}
 
-## This function basically makes the api call, gets the data in JSON format, parses it to csv and stores it in a csv file. There is a loop that you can see which calls the api multiple times with different years
+## Part 1. Getting the data and storing it in a csv file
 def getData():
 	with requests.Session() as s:
 		dataFile = open('data.csv', 'w')
@@ -30,8 +30,9 @@ def getData():
 			writer.writerow(vals.values())
 		dataFile.close()
 
+
 ## Part 2
-def readCSVandPlotLineGraph():
+def readCSVandStore():
 	df = pandas.read_csv('data.csv')
 	for year in df['year']:
 		YEARS.append(year)
@@ -42,19 +43,42 @@ def readCSVandPlotLineGraph():
 		i += 1
 	for value in df['Value']:
 		VALUES.append(int(value.replace(',',''))) #this will give value in thousands, we can just put that as a label
-	plt.plot(YEARS, VALUES)
-	plt.savefig('plot.png')
 
-def mean():
-	meanDict = {}
 	for i in range(len(VALUES)):
 		if YEARS[i] in meanDict:
 			meanDict[YEARS[i]].append(VALUES[i])
 		else:
 			meanDict[YEARS[i]] = [VALUES[i]]
-	
+
+def plotChart():
+	for year in meanDict:
+		plt.plot(meanDict[year])
+		plt.xlabel("--------- " + str(year) + " --------->")
+		plt.ylabel("--------- VALUE -------->")
+		plt.savefig(str(year) + '.png')
+		plt.close()
+
+	plt.plot(YEARS_MONTH, VALUES)
+	plt.xlabel('Plot over the years')
+	plt.savefig('plot.png')
+	plt.close()
+
+def mean():
+	print "\n*************************"
+	print "\tMean\n*************************"
+	print "Year\t |\tMean Value"
+	print "--------------------------"
 	for item in meanDict:
-		print(item, sum(meanDict[item]) / len(meanDict[item]))
+		print str(item) + "\t | \t" + str(sum(meanDict[item]) / len(meanDict[item]))
+
+def median():
+	print "\n*************************"
+	print "\tMedian\n*************************"
+	print "Year\t |\tMedian Value"
+	print "--------------------------"
+	for years in meanDict:
+		meanDict[years].sort()
+		print str(years) + "\t | \t" +  str(meanDict[years][len(meanDict[years])//2])
 
 
 # Part 3
@@ -98,6 +122,9 @@ def linear_reg():
 	plt.plot(STRING_MONTHS, SELECTED_DATA, 'yo', STRING_MONTHS, fit_function(NUM_MONTHS), '--k')
 	plt.show()
 
-getData()
-readCSVandPlotLineGraph()
-linear_reg()
+# getData()
+readCSVandStore()
+plotChart()
+mean()
+median()
+# linear_reg()
