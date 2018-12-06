@@ -3,6 +3,9 @@ import json
 import requests
 import pandas
 import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
 
 ## Global data that we might need later. Will change this whole thing into a class later, this is to receive the results quickly at first
 YEARS = []
@@ -41,5 +44,49 @@ def readCSVandPlotLineGraph():
 	plt.plot(YEARS, VALUES)
 	plt.show()
 
-# getData()
+
+# Part 3
+def linear_reg():
+	SELECTED_DATA = []
+	df = pandas.read_csv('data.csv')
+	for index, row in df.iterrows():
+		pandas.to_numeric(row['Value'], errors='coerce')
+		if row['year'] == np.int64(2017):
+			data_string = row['Value']
+			data_string = data_string.replace(',', '')
+			SELECTED_DATA.append(int(data_string))
+
+	NUM_MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] #['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+
+	lm = LinearRegression()
+	RESHAPE_MONTHS = np.reshape(NUM_MONTHS, (-1, 1))
+	RESHAPE_DATA = np.reshape(SELECTED_DATA, (-1, 1))
+	model = lm.fit(RESHAPE_MONTHS, RESHAPE_DATA)
+	predictions = lm.predict(RESHAPE_MONTHS)
+
+	string_predictions = []
+	count = 0
+	while count < 12:  # for each month in predictions adds to an array that will contain the float value of the prediction
+		curr_prediction = ''.join(str(e) for e in predictions[count])
+		string_predictions.append(float(curr_prediction))
+		count += 1
+
+	print('Prediction for the month of November:', string_predictions[10])
+	absolute_error = abs(string_predictions[10] - SELECTED_DATA[10])  # gets the data for the month of Nov from both arrays
+	print('Absolute Error:', absolute_error)
+	r_squared = r2_score(SELECTED_DATA, string_predictions)
+	print('R Squared value:', r_squared)
+
+	STRING_MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+	plt.plot(STRING_MONTHS, SELECTED_DATA)
+	plt.show()
+
+	linear_fit = np.polyfit(NUM_MONTHS, SELECTED_DATA, 1)
+	fit_function = np.poly1d(linear_fit)
+	plt.plot(STRING_MONTHS, SELECTED_DATA, 'yo', STRING_MONTHS, fit_function(NUM_MONTHS), '--k')
+	plt.show()
+
+getData()
 readCSVandPlotLineGraph()
+linear_reg()
+
