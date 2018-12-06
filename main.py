@@ -86,8 +86,6 @@ def linear_reg():
 	plt.plot(STRING_MONTHS, SELECTED_DATA, 'yo', STRING_MONTHS, fit_function(NUM_MONTHS), '--k')
 	plt.show()
 
-
-
 getData()
 readCSVandPlotLineGraph()
 linear_reg()
