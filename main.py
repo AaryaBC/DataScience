@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
+import os
 
 YEARS = []
 VALUES = []
@@ -125,9 +126,11 @@ def linear_reg():
 	plt.savefig("Prediction2.png")
 	plt.close()
 
-getData()
-readCSVandStore()
-plotChart()
-mean()
-median()
-linear_reg()
+if __name__ == '__main__':
+	if not os.path.isfile('data.csv'):
+		getData()
+	readCSVandStore()
+	plotChart()
+	mean()
+	median()
+	linear_reg()
